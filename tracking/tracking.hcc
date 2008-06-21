@@ -1,0 +1,133 @@
+
+#define PAL_TARGET_CLOCK_RATE PAL_PREFERRED_VIDEO_CLOCK_RATE
+#include "pal_master.hch"
+#include "pal_keyboard.hch"
+#include "pxs.hch"
+#include "stdlib.hch"
+
+// Custom libraries
+#include "tracking_lib.hch"
+
+
+
+
+void main (void)
+{
+    /*
+     * Mode macros
+     */
+    macro expr ClockRate = PAL_ACTUAL_CLOCK_RATE;
+    macro expr Mode      = SyncGen2GetOptimalModeCT   (ClockRate);
+    macro expr Width     = 200;
+    macro expr Height    = 200;
+ 	macro expr OrigWidth = SyncGen2GetHActivePixelsCT (Mode);
+ 	macro expr OrigHeight= SyncGen2GetVActiveLinesCT  (Mode);
+	
+	
+
+	
+ 	// Streams
+	        
+ 	PXS_P_S (CAMERA, PXS_RGB_U8);			// Input stream
+ 	PXS_P_S (CAMERABLURRED, PXS_RGB_U8);
+ 	PXS_P_S (YCbCrIN, PXS_YCbCr_U8);		// Blurred camera signal 
+
+ 	PXS_P_S (SEGMENTED, PXS_MONO_U1);
+	PXS_P_S (SEGMENTEDYCbCr, PXS_MONO_U1);	// Closed thresholded signal
+
+ 	PXS_P_S (BOUNDINGBOX, PXS_MONO_U1);
+
+ 	PXS_P_S (BOUNDINGBOXRGB, PXS_RGB_U8);
+	PXS_P_S (CONSOLE, PXS_RGB_U8); 			// 
+ 
+ 	PXS_PV_S (VGASYNC, PXS_EMPTY);
+ 	PXS_P_A (CAMERA2, PXS_RGB_U8);
+ 	PXS_P_A (CAMERACLIP, PXS_RGB_U8);
+
+ 	PXS_PV_A (VGASYNC2, PXS_EMPTY);
+ 	PXS_PV_A (VGACLIP, PXS_EMPTY);
+ 
+
+ 	PXS_PV_A (VGAOUT, PXS_RGB_U8);
+   
+
+ 	static unsigned 1 Second,Second02;
+	static unsigned 16 Padd16=0;
+
+ 	static unsigned 8 Thres=0x11, ThresY=40, ThresCbCr=20;
+ 	static unsigned 8 RGB[3] = {120,120,120};
+ 	static unsigned 8 YCbCr[3] = {120,120,120};
+ 	
+ 	static unsigned 3 Display=3;
+ 	static unsigned 8 Fingers=0,Thumb,ClosedHand;
+	static signed 16 LowerX, LowerY, UpperX, UpperY;
+ 	static unsigned 8 Lx,Ly,Ux,Uy;
+	static unsigned 8 Counts[5];
+ 	
+  	PxsConsoleHandle Console;
+  	PalKeyboard *KeyboardPtr;
+  	PalVersionRequire  (1, 0);
+  	PalVideoOutRequire (1);
+  	PalPS2PortRequire  (2);
+ 
+ 	par
+ 	{  
+    
+		// Time intervals
+		Tick02S(&VGASYNC,&Second02);
+   	 	Tick1S(&VGASYNC,&Second);
+ 
+ 
+ 		// Initialize keyboard
+    	PalKeyboardRun (&KeyboardPtr, PalPS2PortCT (0), ClockRate);
+	    PalKeyboardEnable (KeyboardPtr);            
+    	
+		// Set threshold level and central value of RGB and YUV   
+		SetThreshold(&VGASYNC,&Thres, &ThresY, &ThresCbCr);
+  		SetThresholdValue(&CAMERABLURRED,&YCbCrIN, RGB, YCbCr);
+	 	SetThresholdKeyboard(KeyboardPtr,&Thres,&ThresY,&ThresCbCr);
+
+    	// Display debug information
+		SetDisplay(&VGASYNC,&Second,&Display,&Thres, &ThresY,&Lx,&Ly,&Ux,&Uy, &Fingers,&Thumb,&ClosedHand);
+
+		// Camera Input
+  		PxsVGAIn (&CAMERA, 0, 0, ClockRate);
+		// Image blurring- noise removal
+		BlurRGB(&CAMERA,&CAMERABLURRED, OrigWidth);
+
+		// Segmentation in two color spaces
+    	SegmentRGB(&CAMERABLURRED,&SEGMENTED, &RGB[0], Thres,OrigWidth);
+    	PxsConvert(&CAMERABLURRED, &YCbCrIN);
+    	SegmentYCbCr(&YCbCrIN,&SEGMENTEDYCbCr, &YCbCr[0], ThresCbCr,ThresY,OrigWidth);
+
+  	  	// Bounding box of the segmented object
+  	  	GetBoundingBox(&VGASYNC,&SEGMENTED, &LowerX, &LowerY, &UpperX, &UpperY,15,15,Width-7,Height-7);
+  	  	DrawBoundingBox(&SEGMENTEDYCbCr,&BOUNDINGBOX, LowerX, LowerY, UpperX, UpperY);
+    	PxsConvert(&BOUNDINGBOX,&BOUNDINGBOXRGB);
+  
+    	// Analyze hand within the bounding box and count fingers
+    	CountFingers(&SEGMENTEDYCbCr, LowerX+3, LowerY+3, UpperX+3, UpperY+3, &Fingers,&Thumb,&ClosedHand,&Counts[0]);
+  
+  		// Display counted fingers in the console
+  		DisplayFingers(&Console,Second, Fingers, Thumb, ClosedHand, &Counts[0]);
+
+    	// Rescaling of the output
+    	PxsScalePower2 (&BOUNDINGBOXRGB, &CAMERA2, 1);
+    
+		// Console overlay
+  		PxsConsole(&BOUNDINGBOXRGB,&CONSOLE, &Console, Width<<1,Height<<1);
+  		PxsConsoleSetCursor(&Console,0);
+  
+  		// Clip of the camera area
+  		PxsClipRectangle (&CONSOLE, &CAMERACLIP, 0, 0, Width, Height);
+  
+  		// Synchronization and Progressive VGA out
+    	PxsVGASyncGen (&VGASYNC, Mode);
+    	PxsScalePower2 (&VGASYNC, &VGASYNC2, 2);   
+    	PxsClipRectangle (&VGASYNC2, &VGACLIP, 0, 0, Width, Height);
+    	PxsBlockRAMFrameBuffer (&CAMERACLIP, &VGACLIP, &VGAOUT, Width, Height, PXS_WEAVE, ClockRate);        
+    	PxsVGAOut (&VGAOUT, 0, 0, ClockRate);
+  
+    
+    } // PAR
+}

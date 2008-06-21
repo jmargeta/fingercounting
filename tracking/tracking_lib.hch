@@ -1,0 +1,36 @@
+#ifndef __TRACKING_LIB_HCH__
+#define __TRACKING_LIB_HCH__
+
+/*
+ * PAL API
+ */
+#include "pal.hch"
+
+
+/*
+ * Tracking functions
+ */
+
+extern macro proc ThresholdRGB(In, Out, Threshold, Color);
+extern macro proc SetThreshold(In,Thres, ThresY);
+extern macro proc SetThresholdColor(In,Color);
+extern macro proc SetThresholdYCbCr(In,YCbCr);
+extern macro proc SetThresholdValue(In1,In2,RGB, YCbCr);
+extern macro proc ThresholdYCbCr(In, Out, Thres, ThresY, ThresYCbCr);
+extern macro proc ThresholdRGBYCbCr(InRGB,InYCbCr, Out, Thres, RGB,YCbCr);
+extern macro proc DrawSquare(In, Out, X, Y, R,G,B);
+extern macro proc MyBlockRAMFrameBuffer (In, CoordIn, Out, Width, Height, DeInterlaceMode, ClockRate);
+extern macro proc SetDisplay(Sync,Tick,Display,Thres, ThresY,Lx,Ly,Ux,Uy, Fingers,Thumb,ClosedHand);
+extern macro proc GetBoundingBox(In, Lx, Ly, Ux, Uy, MINX, MINY, MAXX, MAXY);
+extern macro proc DrawBoundingBox(Sync,In, Out,LowerX, LowerY, UpperX, UpperY);
+extern macro proc CountFingers(In, Lx, Ly, Ux, Uy, Fingers,Thumb,ClosedHand,Counts);
+extern macro proc Tick1S(In,Second);
+extern macro proc Tick05S(In,Second);
+extern macro proc Tick02S(In,Tick);
+extern macro proc BlurRGB(In,Out, Width);
+extern macro proc SegmentRGB(In,Out, RGB, Thres, Width);
+extern macro proc SegmentYCbCr(In,Out, YCbCr, Thres,ThresY,Width);
+extern macro proc SetThresholdKeyboard(KeyboardPtr, Thres,ThresY,ThresCbCr);
+extern macro proc DisplayFingers(Console,Second, Fingers, Thumb, ClosedHand,Counts);
+	
+#endif /* __TRACKING_LIB_HCH__ */

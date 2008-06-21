@@ -1,0 +1,979 @@
+#include "pal_master.hch"
+#include "pxs.hch"
+#include "stdlib.hch"
+#include "pal_keyboard.hch"
+
+
+macro expr X0 = 101;
+macro expr Y0 = 101;
+
+
+
+/*************************************************
+* Thresholds RGB stream by a defined RGB color   *
+* if the SAD is greater than distance            *
+* In - RGB stream	                             *
+* Out - Monochrome stream                        *
+* Thres - absolute distance to the desired color *
+* Color - RGB color                              *
+**************************************************/
+macro proc ThresholdRGB(In, Out, Thres, Color)
+{
+
+ 	while(1)
+	{
+		par
+		{
+
+			PxsCopyVACSH (In, Out);
+            if (In->Valid && In->Active)
+            {
+                par
+                {
+					if (
+						//abs(In->Pixel.U8[PXS_R] - Color[0]) < Thres && 
+						//abs(In->Pixel.U8[PXS_G] - Color[1]) < Thres && 
+						//abs(In->Pixel.U8[PXS_B] - Color[2]) < Thres)
+	
+					//	p=(In->Pixel.U8[PXS_R]);
+					//	au=((unsigned 1)0@p);
+					//	a=((signed 9) au);
+					//  bu=((unsigned 1)0@Color[1]);
+					//	b=((signed 9) bu);
+					//	Diff=((unsigned 8)(abs(a-b)<-8))
+					//	Diff<Thres;
+
+						((unsigned 8)(abs(((signed 9) ((unsigned 1)0@(In->Pixel.U8[PXS_R])))-((signed 9) ((unsigned 1)0@Color[0])))<-8))<Thres&&
+						((unsigned 8)(abs(((signed 9) ((unsigned 1)0@(In->Pixel.U8[PXS_G])))-((signed 9) ((unsigned 1)0@Color[1])))<-8))<Thres&&
+						((unsigned 8)(abs(((signed 9) ((unsigned 1)0@(In->Pixel.U8[PXS_B])))-((signed 9) ((unsigned 1)0@Color[2])))<-8))<Thres)
+	
+						{
+							par
+							{
+								Out->Pixel.U1[PXS_M] = 1; //PxsWhite;
+								Out->Active = !In->Sync.Blank;
+							}
+						}
+					else 
+						{
+							par
+							{
+								Out->Pixel.U1[PXS_M] = 0; //PxsBlack;
+								Out->Active = In->Active;
+							}
+						}
+                }
+            }
+			else
+			{
+				delay;
+			}
+           
+		}
+	}
+}
+
+
+
+/**********************************************************
+* Thresholds YCbCr stream by a defined YCbCr components   *
+* if the SAD is greater than distance            		  *
+* In - RGB stream	                                      *
+* Out - Monochrome stream                                 *
+* Thres - absolute distance to the desired chrominances   *
+* ThresY - absolute distance to the desired Luma          *
+* YCbCr - YCbCr components                                *
+***********************************************************/
+macro proc ThresholdYCbCr(In, Out, Thres, ThresY, YCbCr)
+{
+
+ 	while(1)
+	{
+		par
+		{
+
+			PxsCopyVACSH (In, Out);
+            if (In->Valid && In->Active)
+            {
+                par
+                {
+					if (	
+						((unsigned 8)(abs(((signed 9) ((unsigned 1)0@(In->Pixel.U8[PXS_Y])))-((signed 9) ((unsigned 1)0@YCbCr[0])))<-8))<Thres&&
+						((unsigned 8)(abs(((signed 9) ((unsigned 1)0@(In->Pixel.U8[PXS_Cb])))-((signed 9) ((unsigned 1)0@YCbCr[1])))<-8))<Thres&&
+						((unsigned 8)(abs(((signed 9) ((unsigned 1)0@(In->Pixel.U8[PXS_Cr])))-((signed 9) ((unsigned 1)0@YCbCr[2])))<-8))<Thres)
+
+						{
+							Out->Pixel.U1[PXS_M] = 1; //PxsWhite;
+							Out->Active = !In->Sync.Blank;
+						}
+					else 
+						{
+							Out->Pixel.U1[PXS_M] = 0; //PxsBlack;
+							Out->Active = In->Active;
+						}
+                }
+            }
+			else
+			{
+				delay;
+			}
+           
+		}
+	}
+}
+
+
+/**********************************************************
+* Changes the threshold of the filters on button press    *
+* In - Synchronization stream                             *
+* Thres - desired threshold in color and chrominances     *
+* ThresY - desired threshold for luma                     *
+***********************************************************/
+macro proc SetThreshold(In,Thres, ThresY,ThresCbCr)
+{
+
+ par
+{
+	while(1)
+	{
+		par
+		{
+
+			PxsAwaitVSync (In);	
+			if (RC10ButtonLeftRead())
+			{
+				if(*Thres>1)
+				{
+					*Thres=*Thres-1;
+					par
+					{
+						*ThresCbCr=(*Thres)+10;
+						*Thres=(*Thres>0x7F?0xFF:(*Thres<<1));
+					}
+				}
+				else
+				{
+					delay;
+				}
+			}
+			else
+			{
+				delay;
+			}
+			
+			if (RC10ButtonRightRead())
+			{
+				if(*Thres<255)
+				{
+					*Thres=*Thres+1;
+					par
+					{
+						*ThresCbCr=(*Thres)+10;
+						*Thres=(*Thres>0x7F?0xFF:(*Thres<<1));
+					}
+				}
+				else
+				{
+					delay;
+				}
+			}
+			else
+			{
+				delay;
+			}
+			
+		}
+	}
+}    
+}
+
+
+/**********************************************************
+* Changes the threshold color to the color of center pixel*
+* on button press                                         * 
+* In1 - RGB stream	                                      *
+* In2 - YCbCr stream	                                  *
+* Out - Monochrome stream                                 *
+* Thres - absolute distance to the desired chrominances   *
+* ThresY - absolute distance to the desired Luma          *
+* YCbCr - YCbCr components                                *
+***********************************************************/
+macro proc SetThresholdValue(In1,In2,RGB, YCbCr)
+{ 
+ 
+ 	while(1)
+ 	{
+  		par
+  		{	
+   	
+   			if (RC10ButtonFireRead())
+			{	
+				par
+				{
+					if(In1->Coord.X == X0 && In1->Coord.Y == Y0)
+    				{
+     					RGB[0] = In1->Pixel.U8[PXS_R];
+     					RGB[1] = In1->Pixel.U8[PXS_G];
+     					RGB[2] = In1->Pixel.U8[PXS_B];
+					}
+					else
+					{
+						delay;
+					}
+					if(In2->Coord.X == X0 && In2->Coord.Y == Y0)
+    				{
+     					YCbCr[0] = In2->Pixel.U8[PXS_Y];
+			   			YCbCr[1] = In2->Pixel.U8[PXS_Cb];
+     					YCbCr[2] = In2->Pixel.U8[PXS_Cr];
+					}
+					else
+					{
+						delay;
+					}
+				}	 
+     			
+    		}
+
+    		else
+    		{
+     			delay;
+    		}
+  		}
+ 	}
+}
+
+
+/**********************************************************
+* Overlays a rectangle over the input stream              *
+* on button press                                         * 
+* In - Monochrome stream	                              *
+* Out - Monochrome stream                                 *
+* Lx - lower X coordinate of the rectangle                *
+* Ly - lower Y coordinate of the rectangle                *
+* Ux - upper X coordinate of the rectangle                *
+* Uy - upper Y coordinate of the rectangle                *
+***********************************************************/
+macro proc DrawBoundingBox(In, Out, Lx, Ly, Ux, Uy)
+{
+	static signed 16 CutLine1;
+	static signed 16 CutLine2;
+	static signed 16 CutLine3;
+	static signed 16 CutLine4;
+	static signed 16 CutLine5;
+
+	static unsigned 1 DisplayCL1=1,DisplayCL2=1,DisplayCL3=1,DisplayCL4=1,DisplayCL5=1;
+	static unsigned 16 Height;
+	static unsigned 3 Padd3=0;
+	static unsigned 5 Padd5=0;
+	while(1)
+	{
+		par
+		{
+			Height=(unsigned 16) (Uy - Ly);
+		/*	CutLine1 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)));
+			CutLine2 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)+(Height>>4)));
+			CutLine3 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)+(Height>>4)+(Height>>5)));
+			CutLine4 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)));
+			CutLine5 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)+(Height>>4)));
+*/
+			CutLine1 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)));
+			CutLine2 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)+(Height>>4)));
+			CutLine3 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)));
+			CutLine4 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)+(Height>>4)));
+			CutLine5 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)+(Height>>3)));
+
+			PxsCopyVCSH (In, Out);
+            if (In->Valid && In->Active)
+            {
+                par
+                {
+					if (((abs(In->Coord.X-Lx)<=2||abs(In->Coord.X-Ux)<=2)&&In->Coord.Y>=Ly&&In->Coord.Y<=Uy)||
+				((abs(In->Coord.Y-Ly)<=2||abs(In->Coord.Y-Uy)<=2)&&In->Coord.X>=Lx&&In->Coord.X<=Ux))
+					{
+						par
+						{
+							Out->Pixel.U1[PXS_M]=(unsigned 1) 1;
+							Out->Active = In->Active;
+						}
+					}
+					// Draw finger detection line
+					else if((In->Coord.Y==CutLine1&&DisplayCL1==1&&(abs(In->Coord.X-Lx)<7||abs(In->Coord.X-Ux)<7))||
+					(In->Coord.Y==CutLine2&&DisplayCL2==1&&(abs(In->Coord.X-Lx)<17||abs(In->Coord.X-Ux)<17))||
+					(In->Coord.Y==CutLine3&&DisplayCL3==1&&(abs(In->Coord.X-Lx)<17||abs(In->Coord.X-Ux)<17))||
+					(In->Coord.Y==CutLine4&&DisplayCL4==1&&(abs(In->Coord.X-Lx)<17||abs(In->Coord.X-Ux)<17))||
+					(In->Coord.Y==CutLine5&&DisplayCL5==1&&(abs(In->Coord.X-Lx)<17||abs(In->Coord.X-Ux)<17)))
+					
+					{
+						par
+						{
+							Out->Pixel.U1[PXS_M]=(unsigned 1) 1;
+							Out->Active = In->Active;
+						}
+					}
+
+					else
+					{
+						par
+						{
+							Out->Pixel.U1[PXS_M]=In->Pixel.U1[PXS_M];
+							Out->Active = In->Active;
+						}
+					}
+					
+                }
+            }
+			else
+			{
+				delay;
+			}
+
+		}
+	}
+}
+
+
+
+/**********************************************************
+* Displays information on the 7 segment display           *
+* In - synchronization stream	                          *
+* Display - State of the display                          *
+* Thres - absolute distance to the desired chrominances   *
+* ThresY - absolute distance to the desired Luma          *
+* Lx - lower X coordinate of the rectangle                *
+* Ly - lower Y coordinate of the rectangle                *
+* Ux - upper X coordinate of the rectangle                *
+* Uy - upper Y coordinate of the rectangle                *
+***********************************************************/
+macro proc SetDisplay(In,Second,Display,Thres, ThresY,Lx,Ly,Ux,Uy, Fingers,Thumb,ClosedHand)
+{
+
+
+	macro expr DFINGERS = 0;
+	macro expr DTHRES = 1;
+	macro expr DTHRESY = 2;
+//	macro expr DTHRESY = 2;
+
+	par
+	{
+		// Set threshold level
+	while(1)
+	{
+		par
+		{
+
+			PxsAwaitVSync (In);
+            if(!(RC10ButtonLeftRead()||RC10ButtonRightRead()))
+			{
+                par
+                {
+                    if (RC10ButtonDownRead())
+			        {
+				        *Display=*Display-1;
+			        }
+			        else
+			        {
+				        delay;
+			        }
+			
+			        if (RC10ButtonUpRead())
+			        {
+				        *Display=*Display+1;
+			        }
+			        else
+			        {
+				        delay;
+                    }
+                }
+            }
+			else
+			{
+				delay;
+			}
+
+		}
+	}
+
+	while(1)
+  	{
+		par
+		{
+          //  PxsAwaitVSync (In);
+			if(*Second==1&&!(RC10ButtonLeftRead()||RC10ButtonRightRead()))
+            { 
+			    RC10LEDWriteMask (0x00);
+                RC10LEDWrite (*Display, 1);
+                if (*Display == DTHRES)
+                {	
+					RC10SevenSegWritePair(*Thres,0,0);
+				}
+                else if (*Display == DTHRESY)
+				{
+					RC10SevenSegWritePair(*ThresY,0,0);
+				}
+                else if (*Display == 3)
+				{
+					RC10SevenSegWritePair(*Fingers,(*Thumb==1?1:0),(*ClosedHand==1?1:0));
+				}
+                else if (*Display == 4)
+				{
+					RC10SevenSegWritePair(*Ly,0,0);
+				}
+                else if (*Display == 5)
+				{
+					RC10SevenSegWritePair(*Lx-*Ly,0,0);
+				}
+                else if (*Display == 6)
+				{
+					RC10SevenSegWritePair(*Ux-*Uy,0,0);
+				}                
+                else
+                {
+                    delay;
+                }
+			}
+			else
+			{
+				delay;
+			}
+  		}
+	}
+	}//par
+
+}
+
+
+
+/**********************************************************
+* Counts fingers on the hand in the input stream within   *
+* the bounding rectangle							      *
+* In - synchronization stream	                          *
+* Lx - lower X coordinate of the rectangle                *
+* Ly - lower Y coordinate of the rectangle                *
+* Ux - upper X coordinate of the rectangle                *
+* Uy - upper Y coordinate of the rectangle                *
+* Fingers - number of counted fingers                     *
+***********************************************************/
+macro proc CountFingers(In, Lx, Ly, Ux, Uy, Fingers,Thumb,ClosedHand, Counts)
+{
+	static signed 16 CutLine1;
+	static signed 16 CutLine2;
+	static signed 16 CutLine3;
+	static signed 16 CutLine4;
+	static signed 16 CutLine5;
+
+
+	static unsigned 16 Height, Width;
+	static unsigned 3 Padd3=0;
+	static unsigned 5 Padd5=0;
+	static unsigned 8 Last;
+	static unsigned 8 Count, MaxValidCount;
+	static unsigned 8 CountArr[5];
+	static unsigned 8 ThumbPresent, NoFingers;
+
+
+	//macro proc BBWidth()=Ux-Lx;
+
+	while(1)
+	{
+		par
+		{
+	
+			
+			
+			// thumb
+			//Height/Width=100/90 Height==Width, Height>Width
+			//Height/Width=52/90  Height=Width>>1
+			//no thumb
+			// Height/Width=100/62 Height=Width<<1
+			//Zero fingers
+			// Height/Width=52/62 Height==Width, Height<Width
+			
+
+			Height=(unsigned 16) (Uy - Ly);
+			Width=(unsigned 16) (Ux - Lx);
+
+
+			ThumbPresent=
+			((abs(Height-Width)<(Width>>2)&&Height>Width)||
+			 (abs(Height-(Width>>1))<(Height>>2)&&Height<Width)?1:0);
+			NoFingers=((abs(Height-Width)<(Width>>2)&&Height<Width)?1:0);
+
+
+
+
+			CutLine1 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)));			 // 62
+			CutLine2 =  Uy - ( (signed 16) ((Height>>1) + (Height>>3)+(Height>>4))); // 68
+			CutLine3 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)));			 // 75
+			CutLine4 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)+(Height>>4))); // 81
+			CutLine5 =  Uy - ( (signed 16) ((Height>>1) + (Height>>2)+(Height>>3))); // 87
+
+			if ((In->Coord.Y==CutLine1||In->Coord.Y==CutLine2||In->Coord.Y==CutLine3||In->Coord.Y==CutLine4||In->Coord.Y==CutLine5)&&In->Coord.X==Lx)
+			{
+				if (In->Pixel.U1[PXS_M]==0)
+				{
+					par
+					{
+						Count=0;
+						Last=0;
+					}
+				}
+				else
+				{
+					par
+					{
+						Count=0;
+						Last=1;
+					}
+				}
+				
+			}
+			else if((In->Coord.Y==CutLine1||In->Coord.Y==CutLine2||In->Coord.Y==CutLine3||In->Coord.Y==CutLine4||In->Coord.Y==CutLine5)&&In->Coord.X<Ux)
+			{
+				if (In->Pixel.U1[PXS_M]==0)
+				{
+					Last=0;
+				}
+				else
+				{
+					Last++;
+					if (Last==5)
+					{
+						Count++;
+					}
+					else
+					{
+						delay;
+					}
+					
+				}
+			
+			}
+			else if(In->Coord.Y==CutLine1&&In->Coord.X==Ux)
+			{
+				par
+				{
+					CountArr[0]=Count;	
+			//		MaxValidCount=(Count<5&&Count>MaxValidCount?Count:MaxValidCount);	
+				}
+			}
+			else if(In->Coord.Y==CutLine2&&In->Coord.X==Ux)
+			{
+				par
+				{
+					CountArr[1]=Count;	
+		//			MaxValidCount=(Count<5&&Count>MaxValidCount?Count:MaxValidCount);	
+				}
+			}
+			else if(In->Coord.Y==CutLine3&&In->Coord.X==Ux)
+			{
+				par
+				{
+					CountArr[2]=Count;	
+		///			MaxValidCount=(Count<5&&Count>MaxValidCount?Count:MaxValidCount);	
+				}
+			}
+
+			else if(In->Coord.Y==CutLine4&&In->Coord.X==Ux)
+			{
+				par
+				{
+					CountArr[3]=Count;	
+		//			MaxValidCount=(Count<5&&Count>MaxValidCount?Count:MaxValidCount);	
+				}
+			}
+			
+			else if(In->Coord.Y==CutLine5&&In->Coord.X==Ux)
+			{
+				par
+				{
+					CountArr[4]=Count;	
+			//		MaxValidCount=(Count<5&&Count>MaxValidCount?Count:MaxValidCount);	
+				}
+			}
+			else if(In->Coord.Y==Uy&&In->Coord.X==Ux)
+			{
+				
+				par
+				{
+					par(i=0;i<5;i++)
+					{
+						Counts[i]=CountArr[i];
+					
+					}
+					
+					seq
+					{
+						MaxValidCount=0;
+						seq(i=0;i<5;i++)
+						{
+							if(CountArr[i]>MaxValidCount&&CountArr[i]<5)
+							{
+								MaxValidCount=	CountArr[i];
+							}
+						}
+						par
+						{
+							*ClosedHand=NoFingers;
+							*Fingers=MaxValidCount;			
+							*Thumb=	ThumbPresent;			
+						}
+					}
+					
+				}
+			}
+			else
+			{	
+				delay; 
+			}
+
+		}
+	}
+}
+
+
+
+
+/**********************************************************
+* Synchronization flag with interval approximately 1 sec  *
+* In - synchronization stream	                          *
+* Tick - flag of the second                               *
+***********************************************************/
+macro proc Tick1S(In,Tick)
+{
+static unsigned 5 TickCount=0;
+	while(1)
+  	{
+		par
+		{
+            PxsAwaitVSync (In);
+			TickCount++;
+			if (TickCount==0)
+			{
+				*Tick=1;
+			}
+			else
+			{
+				*Tick=0;
+			}
+		}
+	}
+}
+
+
+/**********************************************************
+* Synchronization flag with interval approximately 0.5 sec*
+* In - synchronization stream	                          *
+* Tick - flag of the second                               *
+***********************************************************/
+macro proc Tick05S(In,Tick)
+{
+static unsigned 4 TickCount=0;
+	while(1)
+  	{
+		par
+		{
+            PxsAwaitVSync (In);
+			TickCount++;
+			if (TickCount==0)
+			{
+				*Tick=1;
+			}
+			else
+			{
+				*Tick=0;
+			}
+		}
+	}
+}
+
+
+/**********************************************************
+* Synchronization flag with interval approximately 0.2 sec*
+* In - synchronization stream	                          *
+* Tick - flag of the second                               *
+***********************************************************/
+macro proc Tick02S(In,Tick)
+{
+static unsigned 3 TickCount=0;
+	while(1)
+  	{
+		par
+		{
+            PxsAwaitVSync (In);
+			TickCount++;
+			if (TickCount==0)
+			{
+				*Tick=1;
+			}
+			else
+			{
+				*Tick=0;
+			}
+		}
+	}
+}
+
+
+/**********************************************************
+* Gets a bounding box of a segmented image                *
+* In - Monochrome stream	                              *
+* Out - Monochrome stream                                 *
+* Lx - lower X coordinate of the rectangle                *
+* Ly - lower Y coordinate of the rectangle                *
+* Ux - upper X coordinate of the rectangle                *
+* Uy - upper Y coordinate of the rectangle                *
+***********************************************************/
+macro proc GetBoundingBox(Sync,In, Lx, Ly, Ux, Uy, MINX, MINY, MAXX, MAXY)
+{
+
+ static signed 16 MinX, MinY, MaxX, MaxY;
+
+	par
+	{
+
+	while(1)
+ {
+    PxsAwaitVSync (Sync);
+    
+    par
+    {
+		// Average two consecutive frames
+    // 	LowerX=(LowerX>>1)+(MinX>>1);
+   	//	LowerY=(LowerY>>1)+(MinY>>1);
+	//	UpperX=(LowerY>>1)+(MaxX>>1);
+	//	UpperY=(LowerY>>1)+(MaxY>>1);
+	
+		*Lx=MinX;
+   		*Ly=MinY;
+		*Ux=MaxX;
+		*Uy=MaxY;		
+
+		MinX = MAXX;
+		MinY = MAXY;
+    	MaxX = 0;
+		MaxY = 0;	
+
+    }
+    
+ }
+
+ 		while(1)
+ 		{
+			par
+    		{
+				if (In->Valid && In->Active&&In->Pixel.U1[PXS_M]==1&&In->Coord.X>MINX&&In->Coord.Y>MINY&&In->Coord.X<MAXX&&In->Coord.Y<MAXY)
+        		{
+            		par
+            		{
+
+                		if (In->Coord.X > MaxX)
+                		{
+                   			MaxX = In->Coord.X;
+                		}
+                		else
+                		{
+                    		delay;
+                		}
+                
+                		if (In->Coord.Y > MaxY)
+                		{
+                    		MaxY = In->Coord.Y;
+                		}
+                		else
+                		{
+                    		delay;
+                		}
+      
+                		if (In->Coord.X < MinX)
+                		{	
+                    		MinX = In->Coord.X;
+                		}
+                		else
+                		{
+                    		delay;
+               	 		}
+          
+
+                		if (In->Coord.Y < MinY)
+                		{
+                    		MinY = In->Coord.Y;
+                		}
+                		else
+                		{
+                    		delay;
+                		}      
+            		}
+        		} 
+        		else
+        		{
+            		delay;
+        		}
+    		}
+		}
+
+	} //par
+
+
+}
+
+
+
+
+
+
+macro proc BlurRGB(In,Out, Width)
+{
+	PXS_P_S (CAMERAR, PXS_MONO_U8);		// RGB channels
+ 	PXS_P_S (CAMERAG, PXS_MONO_U8);
+	PXS_P_S (CAMERAB, PXS_MONO_U8);
+
+ 	PXS_P_S (BLURREDR, PXS_MONO_U8);		// Blurred RGB channels
+ 	PXS_P_S (BLURREDG, PXS_MONO_U8);    
+	PXS_P_S (BLURREDB, PXS_MONO_U8);
+
+	par
+	{
+		PxsExtractRGB(In,&CAMERAR,&CAMERAG,&CAMERAB);
+ 		PxsBlur5x5(&CAMERAR,&BLURREDR,Width);
+  		PxsBlur5x5(&CAMERAG,&BLURREDG,Width);
+  		PxsBlur5x5(&CAMERAB,&BLURREDB,Width);
+  		PxsCombineRGB(&BLURREDR,&BLURREDG,&BLURREDB, Out);			
+	}	
+}
+
+
+
+macro proc SegmentRGB(In,Out, RGB, Thres, Width)
+{
+	PXS_P_S (THRESHOLDED, PXS_MONO_U1);	// Thresholded image
+ 	PXS_P_S (THRESHOLDED8, PXS_MONO_U8);
+	PXS_P_S (ERODED8, PXS_MONO_U8);		// Eroded to make noise even smaller
+ //	PXS_P_S (ERODED1, PXS_MONO_U1);
+ 	PXS_P_S (ERODED, PXS_MONO_U1);
+	
+ 	PXS_P_S (FILTERED8, PXS_MONO_U8);		// Possibly filterted with median
+ 	PXS_P_S (FILTERED, PXS_MONO_U1);
+
+	par
+	{
+		ThresholdRGB(In, &THRESHOLDED, Thres, &RGB[0]);
+  		PxsErode(&THRESHOLDED,&ERODED, Width);
+  		//PxsErode(&ERODED1,&ERODED, Width);
+  		PxsConvert(&ERODED,&ERODED8);
+  		PxsMedianFilter(&ERODED8, &FILTERED8, Width);
+  		PxsConvert(&FILTERED8,&FILTERED);
+  		PxsClose(&FILTERED,Out, Width);			
+	}	
+}
+
+
+macro proc SegmentYCbCr(In,Out, YCbCr, Thres,ThresY,Width)
+{
+	PXS_P_S (THRESHOLDEDYCbCr, PXS_MONO_U1);	// Thresholded image
+ 	PXS_P_S (THRESHOLDEDYCbCr8, PXS_MONO_U8);
+ 	PXS_P_S (ERODEDYCbCr8, PXS_MONO_U8);		// Eroded to make noise even smaller
+// 	PXS_P_S (ERODED1YCbCr, PXS_MONO_U1);
+ 	PXS_P_S (ERODEDYCbCr, PXS_MONO_U1);
+	PXS_P_S (FILTEREDYCbCr8, PXS_MONO_U8);		// Possibly filterted with median
+ 	PXS_P_S (FILTEREDYCbCr, PXS_MONO_U1);
+	par
+	{
+		
+		ThresholdYCbCr(In, &THRESHOLDEDYCbCr, Thres+5, ThresY+10, &YCbCr[0]);
+		PxsErode(&THRESHOLDEDYCbCr,&ERODEDYCbCr, Width);
+  		//PxsErode(&ERODED1YCbCr,&ERODEDYCbCr, Width);
+  		PxsConvert(&ERODEDYCbCr,&ERODEDYCbCr8);
+  		PxsMedianFilter(&ERODEDYCbCr8, &FILTEREDYCbCr8, Width);
+  		PxsConvert(&FILTEREDYCbCr8,&FILTEREDYCbCr);
+  		PxsClose(&FILTEREDYCbCr,Out, Width);
+	}
+}
+
+
+macro proc SetThresholdKeyboard(KeyboardPtr, Thres,ThresY,ThresCbCr)
+{
+
+ static unsigned 8 key; // key read from the keyboard
+ 
+
+	while(1)
+ 	{
+
+	PalKeyboardReadASCII (KeyboardPtr, &key); 
+	
+	switch (key)
+	{
+		case '9': 
+				*Thres=(*Thres<255?*Thres+1:255);
+				key=' ';
+				break;
+		case '6':
+				*Thres=(*Thres>0?*Thres-1:0);
+				key=' ';
+				break;
+		case '8': 
+				*ThresCbCr=(*ThresCbCr<255?*ThresCbCr+1:255);
+				key=' ';
+				break;
+		case '5':
+				*ThresCbCr=(*ThresCbCr>0?*ThresCbCr-1:0);
+				key=' ';
+				break;
+		
+		case '7': 
+				*ThresY=(*ThresY<255?*ThresY+1:255);
+				key=' ';
+				break;
+		case '4':
+				*ThresY=(*ThresY>0?*ThresY-1:0);
+				key=' ';
+				break;
+	}
+	
+ 	}
+
+}
+  
+
+macro proc DisplayFingers(Console,Second, Fingers, Thumb, ClosedHand,Counts)
+{
+ static unsigned 24 Padd24=0;
+ 
+// show fingers
+while(1)
+  	{
+		par
+		{
+			if(Second==1)
+			{
+				PxsConsoleClear(Console);
+				PxsConsoleMoveCursor (Console, 2, 3);
+				PxsConsolePutUInt32(Console,(unsigned 32) (Padd24@Fingers));
+				if(Thumb==1)
+				{
+					PxsConsolePutChar(Console,'T');
+				}
+				else if (ClosedHand==1)
+				{
+					PxsConsolePutChar(Console,'C');
+				}
+				else
+				{
+					delay;
+				}
+				seq(i=5;i>=1;i--)
+				{	
+					PxsConsolePutChar(Console,'\n');
+					PxsConsolePutUInt32(Console,(unsigned 32) (Padd24@Counts[i-1]));
+				}
+			
+			}
+			else
+			{
+				delay;
+			}
+  		}
+	}
+	
+}
+

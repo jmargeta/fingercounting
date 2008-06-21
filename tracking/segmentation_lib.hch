@@ -1,0 +1,11 @@
+#ifndef __SEGMENTATION_LIB_HCH__
+#define __SEGMENTATION_LIB_HCH__
+
+/*
+ * PAL API
+ */
+#include "pal.hch"
+
+//extern macro proc Segment(In, Out, ThresRGB, ThresY, );
+
+#endif /*  __SEGMENTATION_LIB_HCH__ */

@@ -1,0 +1,418 @@
+
+
+
+
+#define PAL_TARGET_CLOCK_RATE PAL_PREFERRED_VIDEO_CLOCK_RATE
+#include "pal_master.hch"
+#include "pal_keyboard.hch"
+#include "pxs.hch"
+#include "stdlib.hch"
+
+
+
+
+#include "tracking_lib.hch"
+#include "segmentation_lib.hch"
+
+
+
+
+
+
+
+void main (void)
+{
+    /*
+     * Mode macros
+     */
+    macro expr ClockRate = PAL_ACTUAL_CLOCK_RATE;
+    macro expr Mode      = SyncGen2GetOptimalModeCT   (ClockRate);
+    macro expr Width     = 200;
+    macro expr Height    = 200;
+ 	macro expr OrigWidth = SyncGen2GetHActivePixelsCT (Mode);
+ 	macro expr OrigHeight= SyncGen2GetVActiveLinesCT  (Mode);
+	
+	
+
+macro proc BlurRGB(In,Out)
+{
+	PXS_P_S (CAMERAR, PXS_MONO_U8);		// RGB channels
+ 	PXS_P_S (CAMERAG, PXS_MONO_U8);
+	PXS_P_S (CAMERAB, PXS_MONO_U8);
+
+ 	PXS_P_S (BLURREDR, PXS_MONO_U8);		// Blurred RGB channels
+ 	PXS_P_S (BLURREDG, PXS_MONO_U8);    
+	PXS_P_S (BLURREDB, PXS_MONO_U8);
+ 	//	PXS_P_S (CAMERABLURRED, PXS_RGB_U8);
+
+	par
+	{
+		PxsExtractRGB(In,&CAMERAR,&CAMERAG,&CAMERAB);
+ 		PxsBlur5x5(&CAMERAR,&BLURREDR,OrigWidth);
+  		PxsBlur5x5(&CAMERAG,&BLURREDG,OrigWidth);
+  		PxsBlur5x5(&CAMERAB,&BLURREDB,OrigWidth);
+  		PxsCombineRGB(&BLURREDR,&BLURREDG,&BLURREDB, Out);			
+	}	
+}
+
+
+
+macro proc SegmentRGB(In,Out, RGB, Thres)
+{
+	PXS_P_S (THRESHOLDED, PXS_MONO_U1);	// Thresholded image
+ 	PXS_P_S (THRESHOLDED8, PXS_MONO_U8);
+	PXS_P_S (ERODED8, PXS_MONO_U8);		// Eroded to make noise even smaller
+ 	PXS_P_S (ERODED1, PXS_MONO_U1);
+ 	PXS_P_S (ERODED, PXS_MONO_U1);
+	
+ 	PXS_P_S (FILTERED8, PXS_MONO_U8);		// Possibly filterted with median
+ 	PXS_P_S (FILTERED, PXS_MONO_U1);
+	
+ 	PXS_P_S (CLOSED, PXS_MONO_U1);			// Closed thresholded signal
+ 	PXS_P_S (CLOSED8, PXS_MONO_U8);
+	par
+	{
+		ThresholdRGB(In, &THRESHOLDED, Thres, &RGB[0]);
+  		PxsErode(&THRESHOLDED,&ERODED, OrigWidth);
+  		//PxsErode(&ERODED1,&ERODED, Width);
+  		PxsConvert(&ERODED,&ERODED8);
+  		PxsMedianFilter(&ERODED8, &FILTERED8, OrigWidth);
+  		PxsConvert(&FILTERED8,&FILTERED);
+  		PxsClose(&FILTERED,Out, OrigWidth);			
+	}	
+}
+
+
+macro proc SegmentYCbCr(In,Out, YCbCr, Thres,ThresY)
+{
+//	PXS_P_S (YCbCrIN, PXS_YCbCr_U8);			// Blurred camera signal 
+	PXS_P_S (THRESHOLDEDYCbCr, PXS_MONO_U1);	// Thresholded image
+ 	PXS_P_S (THRESHOLDEDYCbCr8, PXS_MONO_U8);
+ 	PXS_P_S (ERODEDYCbCr8, PXS_MONO_U8);		// Eroded to make noise even smaller
+ 	PXS_P_S (ERODED1YCbCr, PXS_MONO_U1);
+ 	PXS_P_S (ERODEDYCbCr, PXS_MONO_U1);
+	PXS_P_S (FILTEREDYCbCr8, PXS_MONO_U8);		// Possibly filterted with median
+ 	PXS_P_S (FILTEREDYCbCr, PXS_MONO_U1);
+	PXS_P_S (CLOSEDYCbCr, PXS_MONO_U1);			// Closed thresholded signal
+    PXS_P_S (CLOSEDYCbCr8, PXS_MONO_U8);
+	par
+	{
+		
+		ThresholdYCbCr(In, &THRESHOLDEDYCbCr, Thres+5, ThresY+10, &YCbCr[0]);
+		PxsErode(&THRESHOLDEDYCbCr,&ERODEDYCbCr, OrigWidth);
+  		//PxsErode(&ERODED1YCbCr,&ERODEDYCbCr, Width);
+  		PxsConvert(&ERODEDYCbCr,&ERODEDYCbCr8);
+  		PxsMedianFilter(&ERODEDYCbCr8, &FILTEREDYCbCr8, OrigWidth);
+  		PxsConvert(&FILTEREDYCbCr8,&FILTEREDYCbCr);
+  		PxsClose(&FILTEREDYCbCr,&CLOSEDYCbCr, OrigWidth);
+	}
+}
+
+
+
+	
+	
+ // added streams
+   
+	        
+ PXS_P_S (CAMERA, PXS_RGB_U8);			// Input stream
+
+/*
+ PXS_P_S (CAMERAR, PXS_MONO_U8);		// RGB channels
+ PXS_P_S (CAMERAG, PXS_MONO_U8);
+ PXS_P_S (CAMERAB, PXS_MONO_U8);
+
+ PXS_P_S (BLURREDR, PXS_MONO_U8);		// Blurred RGB channels
+ PXS_P_S (BLURREDG, PXS_MONO_U8);    
+ PXS_P_S (BLURREDB, PXS_MONO_U8);
+*/ 
+ PXS_P_S (CAMERABLURRED, PXS_RGB_U8);
+
+ PXS_P_S (YCbCrIN, PXS_YCbCr_U8);			// Blurred camera signal 
+ 
+// PXS_P_S (THRESHOLDED, PXS_MONO_U1);	// Thresholded image
+// PXS_P_S (THRESHOLDED8, PXS_MONO_U8);
+ 
+// PXS_P_S (THRESHOLDEDYCbCr, PXS_MONO_U1);	// Thresholded image
+// PXS_P_S (THRESHOLDEDYCbCr8, PXS_MONO_U8);
+ 
+
+// PXS_P_S (ERODED8, PXS_MONO_U8);		// Eroded to make noise even smaller
+// PXS_P_S (ERODED1, PXS_MONO_U1);
+// PXS_P_S (ERODED, PXS_MONO_U1);
+// PXS_P_S (ERODEDYCbCr8, PXS_MONO_U8);		// Eroded to make noise even smaller
+// PXS_P_S (ERODED1YCbCr, PXS_MONO_U1);
+// PXS_P_S (ERODEDYCbCr, PXS_MONO_U1);
+
+
+
+// PXS_P_S (FILTERED8, PXS_MONO_U8);		// Possibly filterted with median
+// PXS_P_S (FILTERED, PXS_MONO_U1);
+// PXS_P_S (FILTEREDYCbCr8, PXS_MONO_U8);		// Possibly filterted with median
+// PXS_P_S (FILTEREDYCbCr, PXS_MONO_U1);
+ 
+ 
+// PXS_P_S (CLOSED, PXS_MONO_U1);			// Closed thresholded signal
+// PXS_P_S (CLOSED8, PXS_MONO_U8);
+ PXS_P_S (CLOSEDYCbCr, PXS_MONO_U1);			// Closed thresholded signal
+// PXS_P_S (CLOSEDYCbCr8, PXS_MONO_U8);
+
+ 
+ PXS_P_S (CLOSEDSYNC, PXS_MONO_U1);
+ PXS_P_S (CLOSEDYCbCrSYNC, PXS_MONO_U1);
+ 
+ PXS_P_S (SEGMENTED, PXS_MONO_U1);
+ PXS_P_S (SEGMENTED8, PXS_MONO_U8);
+ 
+ PXS_P_S (BOUNDINGBOXINNER, PXS_MONO_U1); // Bounding box
+ PXS_P_S (BOUNDINGBOXOUTER, PXS_MONO_U1);
+ PXS_P_S (BOUNDINGBOX, PXS_MONO_U1);
+ PXS_P_S (BOUNDINGBOX8, PXS_MONO_U8);
+ PXS_P_S (BOUNDINGBOXSYNC, PXS_MONO_U8);
+ 
+ PXS_P_S (SEGMENTEDSYNC, PXS_MONO_U8);			// Synchronized segmented signal with bounding box
+ 
+ PXS_P_S (BOUNDINGBOXPLOT, PXS_MONO_U8);	// Overlayed signal
+ PXS_P_S (BOUNDINGBOXRGB, PXS_RGB_U8);
+ PXS_P_S (CONSOLE, PXS_RGB_U8); 			// Bounding box+center of mass
+/// square pl;ot not correct
+
+ PXS_P_S (OUTRGB, PXS_RGB_U8);
+ 
+ 
+ 
+ PXS_PV_S (VGASYNC, PXS_EMPTY);
+    PXS_P_A (CAMERA2, PXS_RGB_U8);
+    PXS_P_A (CAMERACLIP, PXS_RGB_U8);
+
+ 
+ PXS_PV_A (VGASYNC2, PXS_EMPTY);
+    PXS_PV_A (VGACLIP, PXS_EMPTY);
+ 
+
+    PXS_PV_A (VGAOUT, PXS_RGB_U8);
+ 
+ 
+   
+ PXS_P_A (DISPLAYRGB, PXS_RGB_U8);  
+
+ PxsConsoleHandle Console;
+
+
+ static rom textY[2] = "Y:";
+ static rom textU[2] = "U:";
+ static rom textV[2] = "V:";
+
+ static rom textT[2] = "T:";
+
+ static rom textNL[1] = "/n";
+
+ static ram textThres[3] = "   ";
+
+ 
+
+  
+ static unsigned 8 RGB[3] = {120,120,120};
+ 
+ static unsigned 8 YCbCr[3] = {120,120,120};
+ 
+
+ static unsigned 24 Padd24=0;
+
+ static unsigned 16 Padd16=0;
+
+ static unsigned 8 Thres=0x11, ThresY=40;
+
+ static unsigned 32 Thres32=50;
+
+ static unsigned 1 Calibration = 0;
+
+ static signed 16 LowerX, LowerY, UpperX, UpperY;
+
+ static unsigned 8 Lx,Ly,Ux,Uy;
+
+ static unsigned 3 Display=3;
+
+ static unsigned 8 Fingers=0,Thumb,ClosedHand;
+ 
+
+
+ static unsigned 1 Second,Second02;
+
+ static unsigned 8 key; // key read from the keyboard
+ 
+ 	
+
+    PalKeyboard *KeyboardPtr;
+
+    /*
+     * Check we've got everything we need
+     */
+    PalVersionRequire  (1, 0);
+    PalVideoOutRequire (1);
+    PalPS2PortRequire  (2);
+ 
+ par
+ {  
+ 	// Initialize keyboard
+    PalKeyboardRun (&KeyboardPtr, PalPS2PortCT (0), ClockRate);
+    PalKeyboardEnable (KeyboardPtr);            
+    
+	// Set threshold level and central value of RGB and YUV   
+	SetThreshold(&VGASYNC,&Thres, &ThresY);
+  	SetThresholdValue(&CAMERABLURRED,&YCbCrIN, RGB, YCbCr);
+    // Display debug information
+	SetDisplay(&VGASYNC,&Second,&Display,&Thres, &ThresY,&Lx,&Ly,&Ux,&Uy, &Fingers,&Thumb,&ClosedHand);
+
+
+	// Camera Input
+  	PxsVGAIn (&CAMERA, 0, 0, ClockRate);
+	// Image blurring- noise removal
+	BlurRGB(&CAMERA,&CAMERABLURRED);
+
+  
+  /*	PxsExtractRGB(&CAMERA,&CAMERAR,&CAMERAG,&CAMERAB);
+
+  	PxsBlur5x5(&CAMERAR,&BLURREDR,OrigWidth);
+  	PxsBlur5x5(&CAMERAG,&BLURREDG,OrigWidth);
+  	PxsBlur5x5(&CAMERAB,&BLURREDB,OrigWidth);
+  
+  	PxsCombineRGB(&BLURREDR,&BLURREDG,&BLURREDB, &CAMERABLURRED);
+*/
+  	
+//	PxsConvert(&CAMERABLURRED, &YCbCrIN);
+
+  
+ 
+ 
+ 
+ while(1)
+ {
+
+	PalKeyboardReadASCII (KeyboardPtr, &key); 
+	
+	switch (key)
+	{
+		case '+': 
+				Thres++;
+				key=' ';
+				break;
+		case '-':
+				Thres--;
+				key=' ';
+				break;
+		case '8': 
+				ThresY++;
+				key=' ';
+				break;
+		case '5':
+				ThresY--;
+				key=' ';
+				break;
+		}
+	//	Lx= ((unsigned 16) LowerX)<-8;
+    //	Ly= ((unsigned 16) LowerY)<-8;
+    //	Ux= ((unsigned 16) UpperX)<-8;
+    //	Uy= ((unsigned 16) UpperY)<-8; 
+	
+ }
+
+
+  
+  
+
+
+
+ // ThresholdRGB(&CAMERABLURRED, &THRESHOLDED, Thres, &RGB[0]);
+ 
+ // ThresholdYCbCr(&YCbCrIN, &THRESHOLDEDYCbCr, Thres+5, ThresY+10, &YCbCr[0]);
+  //PxsErode(&THRESHOLDED,&ERODED, OrigWidth);
+  ////PxsErode(&ERODED1,&ERODED, Width);
+  //PxsConvert(&ERODED,&ERODED8);
+  //PxsMedianFilter(&ERODED8, &FILTERED8, OrigWidth);
+  //PxsConvert(&FILTERED8,&FILTERED);
+  //PxsClose(&FILTERED,&SEGMENTED, OrigWidth);
+
+ SegmentRGB(&CAMERABLURRED,&SEGMENTED, &RGB[0], Thres);
+ PxsConvert(&CAMERABLURRED, &YCbCrIN);
+ //SegmentYCbCr(&YCbCrIN,&CLOSEDYCbCr, &YCbCr[0], Thres,ThresY+10);
+
+  PxsErode(&THRESHOLDEDYCbCr,&ERODEDYCbCr, OrigWidth);
+  //PxsErode(&ERODED1YCbCr,&ERODEDYCbCr, Width);
+  PxsConvert(&ERODEDYCbCr,&ERODEDYCbCr8);
+  PxsMedianFilter(&ERODEDYCbCr8, &FILTEREDYCbCr8, OrigWidth);
+  PxsConvert(&FILTEREDYCbCr8,&FILTEREDYCbCr);
+  PxsClose(&FILTEREDYCbCr,&CLOSEDYCbCr, OrigWidth);
+  PxsSynchronise(&SEGMENTED,&CLOSEDYCbCr,&CLOSEDSYNC,&CLOSEDYCbCrSYNC,50);
+  
+  
+  GetBoundingBox(&VGASYNC,&SEGMENTED, &LowerX, &LowerY, &UpperX, &UpperY,15,15,Width-7,Height-7);
+
+
+  DrawBoundingBox(&CLOSEDYCbCr,&BOUNDINGBOX, LowerX, LowerY, UpperX, UpperY);
+  PxsConvert(&BOUNDINGBOX,&BOUNDINGBOXRGB);
+  CountFingers(&CLOSEDYCbCr, LowerX, LowerY, UpperX, UpperY, &Fingers,&Thumb,&ClosedHand);
+  
+
+
+  Tick02S(&VGASYNC,&Second02);
+
+  Tick1S(&VGASYNC,&Second);
+
+
+// show fingers
+while(1)
+  	{
+		par
+		{
+			if(Second==1)
+			{
+				PxsConsoleClear(&Console);
+				PxsConsoleMoveCursor (&Console, 10, 100);
+				PxsConsolePutUInt32(&Console,(unsigned 32) (Padd24@Fingers));
+				if(Thumb==1)
+				{
+					PxsConsolePutChar(&Console,'T');
+				}
+				else if (ClosedHand==1)
+				{
+					PxsConsolePutChar(&Console,'C');
+				}
+				else
+				{
+					delay;
+				}
+
+			
+			}
+			else
+			{
+				delay;
+			}
+  		}
+	}
+	
+
+
+  
+  PxsConsoleSetCursor(&Console,0);
+
+
+  PxsScalePower2 (&BOUNDINGBOXRGB, &CAMERA2, 1);
+  
+  PxsConsole(&BOUNDINGBOXRGB,&CONSOLE, &Console, Width<<1,Height<<1);
+  
+  PxsClipRectangle (&CONSOLE, &CAMERACLIP, 0, 0, Width, Height);
+  
+  
+  PxsVGASyncGen (&VGASYNC, Mode);
+  PxsScalePower2 (&VGASYNC, &VGASYNC2, 2);   
+  PxsClipRectangle (&VGASYNC2, &VGACLIP, 0, 0, Width, Height);
+  PxsBlockRAMFrameBuffer (&CAMERACLIP, &VGACLIP, &VGAOUT, Width, Height, PXS_WEAVE, ClockRate); // 100*100        
+        
+  
+  PxsVGAOut (&VGAOUT, 0, 0, ClockRate);
+  
+    
+    } // PAR
+}

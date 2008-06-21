@@ -1,0 +1,144 @@
+<!DOCTYPE pref>
+<settings>
+ <workspace activeProject="0" activeConfiguration="RC10" />
+ <breakpoints/>
+ <workspaceview>
+  <item expanded="true" />
+  <item expanded="true" />
+  <item expanded="false" />
+  <item expanded="false" />
+ </workspaceview>
+ <windowlist>
+  <window filepath="tracking\moveball.hcc" type="SourceEdit" >
+   <size width="1014" height="661" maximised="1" />
+   <position x="-4" y="-22" />
+  </window>
+  <window filepath="tracking\tracking.hcc" type="SourceEdit" >
+   <size width="679" height="449" maximised="0" />
+   <position x="0" y="0" />
+  </window>
+ </windowlist>
+</settings>
+[WorkState_v1_2]
+ptn_Child1=Frames
+ptn_Child2=DK Design Suite Preferences
+ptn_Child3=Breakpoints
+ptn_Child4=WatchVars
+[WorkState_v1_2.Frames]
+ptn_Child1=ChildFrames
+[WorkState_v1_2.Frames.ChildFrames]
+ptn_Child1=Document-0
+ptn_Child2=Document-1
+ptn_Child3=Document-2
+ptn_Child4=Document-3
+ptn_Child5=Document-4
+ptn_Child6=Document-5
+ptn_Child7=Document-6
+ptn_Child8=Document-7
+ptn_Child9=Document-8
+ptn_Child10=Document-9
+ptn_Child11=Document-10
+[WorkState_v1_2.Frames.ChildFrames.Document-0]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-0.ViewFrame-0]
+DocPathName=C:\Documents and Settings\usuari\Escritorio\finalProject\finalProject.hw
+DocumentString=
+DocTemplateIndex=0
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPAAAAAAAAAAAAAAAAKECAAAAANCBAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-1]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-1.ViewFrame-0]
+DocPathName=C:\Documents and Settings\usuari\Escritorio\finalProject\tracking\tracking_lib.hcc
+DocumentString=
+DocTemplateIndex=4
+WindowPlacement=MCAAAAAACAAAAAAADAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPIFAAAAAAIFAAAAAAGJDAAAAADECAAAAA
+IsActiveChildFrame=True
+[WorkState_v1_2.Frames.ChildFrames.Document-2]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-2.ViewFrame-0]
+DocPathName=C:\Documents and Settings\usuari\Escritorio\finalProject\tracking\segmentation_lib.hcc
+DocumentString=
+DocTemplateIndex=4
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPGMAAAAAAGMAAAAAAEAEAAAAABLCAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-3]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-3.ViewFrame-0]
+DocPathName=C:\Documents and Settings\usuari\Escritorio\finalProject\tracking\tracking.hcc
+DocumentString=
+DocTemplateIndex=4
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPIFAAAAAAIFAAAAAALPBAAAAAJIBAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-4]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-4.ViewFrame-0]
+DocPathName=C:\Documents and Settings\usuari\Escritorio\finalProject\tracking\tracking_lib.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPMCAAAAAAMCAAAAAAKGDAAAAAHBCAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-5]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-5.ViewFrame-0]
+DocPathName=C:\archivos de programa\celoxica\pdk\hardware\include\pal_rc10.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPCEAAAAAACEAAAAAAAIDAAAAANCCAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-6]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-6.ViewFrame-0]
+DocPathName=C:\archivos de programa\celoxica\pdk\hardware\include\xilinx_dcm.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPOGAAAAAAOGAAAAAAMKDAAAAAJFCAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-7]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-7.ViewFrame-0]
+DocPathName=C:\archivos de programa\celoxica\pdk\hardware\include\xilinx_dcm_search.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPEIAAAAAAEIAAAAAACMDAAAAAPGCAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-8]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-8.ViewFrame-0]
+DocPathName=C:\archivos de programa\celoxica\pdk\hardware\include\id.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPKJAAAAAAKJAAAAAAINDAAAAAFICAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-9]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-9.ViewFrame-0]
+DocPathName=C:\archivos de programa\celoxica\pdk\hardware\include\rc10.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPGBAAAAAAGBAAAAAAEGCAAAAAHEBAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.Frames.ChildFrames.Document-10]
+ptn_Child1=ViewFrame-0
+[WorkState_v1_2.Frames.ChildFrames.Document-10.ViewFrame-0]
+DocPathName=C:\Documents and Settings\usuari\Escritorio\finalProject\tracking\segmentation_lib.hch
+DocumentString=
+DocTemplateIndex=5
+WindowPlacement=MCAAAAAAAAAAAAAABAAAAAAAPPPPPPPPPPPPPPPPMPPPPPPPJOPPPPPPMNAAAAAAMNAAAAAAKBEAAAAAHMCAAAAA
+IsActiveChildFrame=False
+[WorkState_v1_2.DK Design Suite Preferences]
+Active Project Index=0
+Active Configuration Index=0
+[WorkState_v1_2.WatchVars]
+ptn_Child1=Watch0
+ptn_Child2=Watch1
+ptn_Child3=Watch2
+ptn_Child4=Watch3
+[WorkState_v1_2.WatchVars.Watch0]
+empty=True
+[WorkState_v1_2.WatchVars.Watch1]
+empty=True
+[WorkState_v1_2.WatchVars.Watch2]
+empty=True
+[WorkState_v1_2.WatchVars.Watch3]
+empty=True

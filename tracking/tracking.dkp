@@ -1,0 +1,332 @@
+<celdev_project type="Handel-C Chip" >
+ <configuration base="EDIF" name="RC10" >
+  <setting name="IntermediateFileDir" >RC10</setting>
+  <setting name="OutputFileDir" >RC10</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC10
+call edifmake_rc10 Tracking
+beep</setting>
+  <setting name="CustomBuildStepOutput" >RC10/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC10</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxSpartan3</setting>
+  <setting name="TargetPart" >XC3S1500L-4-FG320</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc10.hcl</setting>
+  <setting name="LibraryModule" >pal_rc10.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc10.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="EnableTreeBalancing" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC200" >
+  <setting name="IntermediateFileDir" >RC200</setting>
+  <setting name="OutputFileDir" >RC200</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC200
+call ..\..\..\..\Software\Bin\edifmake_rc200 Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC200/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC200</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxVirtexII</setting>
+  <setting name="TargetPart" >XC2V1000-4-FG456</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc200.hcl</setting>
+  <setting name="LibraryModule" >pal_rc200.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc200.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC200E" >
+  <setting name="IntermediateFileDir" >RC200E</setting>
+  <setting name="OutputFileDir" >RC200E</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC200E
+call ..\..\..\..\Software\Bin\edifmake_rc200 Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC200E/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC200E</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxVirtexII</setting>
+  <setting name="TargetPart" >XC2V1000-4-FG456</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc200e.hcl</setting>
+  <setting name="LibraryModule" >pal_rc200e.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc200e.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC203" >
+  <setting name="IntermediateFileDir" >RC203</setting>
+  <setting name="OutputFileDir" >RC203</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC203
+call ..\..\..\..\Software\Bin\edifmake_rc200 Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC203/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC203</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxVirtexII</setting>
+  <setting name="TargetPart" >XC2V3000-4-FG676</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc203.hcl</setting>
+  <setting name="LibraryModule" >pal_rc203.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc203.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC203E" >
+  <setting name="IntermediateFileDir" >RC203E</setting>
+  <setting name="OutputFileDir" >RC203E</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC203E
+call ..\..\..\..\Software\Bin\edifmake_rc200 Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC203E/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC203E</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxVirtexII</setting>
+  <setting name="TargetPart" >XC2V3000-4-FG676</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc203e.hcl</setting>
+  <setting name="LibraryModule" >pal_rc203e.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc203e.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC250" >
+  <setting name="IntermediateFileDir" >RC250</setting>
+  <setting name="OutputFileDir" >RC250</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC250
+call ..\..\..\..\Software\Bin\rbfmake Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC250/Tracking.sof</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC250</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >AlteraStratixII</setting>
+  <setting name="TargetPart" >EP2S90F1020C4</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc250.hcl</setting>
+  <setting name="LibraryModule" >pal_rc250.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc250.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC250E" >
+  <setting name="IntermediateFileDir" >RC250E</setting>
+  <setting name="OutputFileDir" >RC250E</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC250E
+call ..\..\..\..\Software\Bin\rbfmake Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC250E/Tracking.sof</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC250E</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >AlteraStratixII</setting>
+  <setting name="TargetPart" >EP2S90F1020C4</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc250e.hcl</setting>
+  <setting name="LibraryModule" >pal_rc250e.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc250e.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC300" >
+  <setting name="IntermediateFileDir" >RC300</setting>
+  <setting name="OutputFileDir" >RC300</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC300
+call ..\..\..\..\Software\Bin\edifmake_rc300 Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC300/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC300</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxVirtexII</setting>
+  <setting name="TargetPart" >XC2V6000-4-FF1152</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc300.hcl</setting>
+  <setting name="LibraryModule" >pal_rc300.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc300.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="EDIF" name="RC300E" >
+  <setting name="IntermediateFileDir" >RC300E</setting>
+  <setting name="OutputFileDir" >RC300E</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="CustomBuildStepCommand" >cd RC300E
+call ..\..\..\..\Software\Bin\edifmake_rc300 Tracking
+..\..\..\..\Software\Bin\beep</setting>
+  <setting name="CustomBuildStepOutput" >RC300E/Tracking.bit</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_RC300E</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >XilinxVirtexII</setting>
+  <setting name="TargetPart" >XC2V6000-4-FF1152</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >true</setting>
+  <setting name="EnableRetiming" >true</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >rc300e.hcl</setting>
+  <setting name="LibraryModule" >pal_rc300e.hcl</setting>
+  <setting name="LibraryModule" >pxs_rc300e.hcl</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <configuration base="Debug" name="Sim" >
+  <setting name="IntermediateFileDir" >Sim</setting>
+  <setting name="OutputFileDir" >Sim</setting>
+  <setting name="ExcludeFromBuild" >false</setting>
+  <setting name="UseCustomBuildStep" >false</setting>
+  <setting name="PreprocessorDefine" >NDEBUG</setting>
+  <setting name="PreprocessorDefine" >USE_SIM</setting>
+  <setting name="PreprocessorDefine" >__EDIF__</setting>
+  <setting name="IgnoreStandardIncludePath" >false</setting>
+  <setting name="GenerateDebugInformation" >true</setting>
+  <setting name="DetectSimultaneousFunctionCalls" >true</setting>
+  <setting name="DetectSimultaneousChannelReadWrites" >true</setting>
+  <setting name="DetectSimultaneousMemoryAccesses" >true</setting>
+  <setting name="HighLevelOptimisation" >true</setting>
+  <setting name="ConditionalRewrite" >true</setting>
+  <setting name="RepeatedConditionalRewrite" >false</setting>
+  <setting name="TargetFamily" >AlteraStratixII</setting>
+  <setting name="TargetPart" >Sim</setting>
+  <setting name="EnableMemoryPipelining" >true</setting>
+  <setting name="EnableTechnologyMapping" >false</setting>
+  <setting name="EnableRetiming" >false</setting>
+  <setting name="LibraryModule" >pxs.hcl</setting>
+  <setting name="LibraryModule" >stdlib.hcl</setting>
+  <setting name="LibraryModule" >sim.hcl</setting>
+  <setting name="LibraryModule" >pal_sim.hcl</setting>
+  <setting name="LibraryModule" >pxs_sim.hcl</setting>
+  <setting name="SimulationBackendLibraryModule" >C:\Archivos de programa\Celoxica\PDK\Software\Lib\PalSim.lib</setting>
+  <setting name="GenerateBrowseInformation" >true</setting>
+  <setting name="EnableTreeBalancing" >false</setting>
+  <setting name="HDLStyle" >ActiveHDL</setting>
+ </configuration>
+ <document type="hcc" name="tracking.hcc" />
+</celdev_project>
