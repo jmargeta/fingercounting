@@ -1,4 +1,6 @@
-# Real-time finger counting
+# [Real-time finger counting](http://jmargeta.github.io/posts/2008/real-time-fingercounting-with-fpga.html)
+
+
 
 This is an example project from our master programme in vision and robotics [Vibot](http://www.vibot.org) for Real-time image processing module.
 We used Celoxica RC10 board with Xilinx FPGA and coded in Handel C with PixelStreams library.
@@ -14,5 +16,8 @@ The approximate pipeline (from what I recall):
  - at some fixed positions of the ROI, horizontal scan lines are counting the number of crossed fingers
 
 
-[PixelStreams] http://www.mentor.com/products/fpga/handel-c/pixelstreams)
+## See also:
+ 
+[PixelStreams] (http://www.mentor.com/products/fpga/handel-c/pixelstreams)
+
 [Celoxica RC 10 board](http://teal.gmu.edu/courses/ECE448/documentation/RC10%20Manual.pdf)
